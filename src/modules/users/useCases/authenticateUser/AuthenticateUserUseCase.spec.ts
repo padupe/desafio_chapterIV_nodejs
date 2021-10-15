@@ -2,6 +2,7 @@ import { AuthenticateUserUseCase } from "./AuthenticateUserUseCase";
 import { InMemoryUsersRepository } from "../../repositories/in-memory/InMemoryUsersRepository"
 import { CreateUserUseCase } from "../createUser/CreateUserUseCase";
 import { ICreateUserDTO } from "../createUser/ICreateUserDTO";
+import { AppError } from "../../../../shared/errors/AppError";
 
 let authenticateUserUseCase: AuthenticateUserUseCase;
 let createUserUseCase: CreateUserUseCase;
@@ -30,5 +31,48 @@ describe('Authenticate User', () => {
         });
 
         expect(resultTest).toHaveProperty('token');
+    });
+
+    it('Should not be able to authenticate an non existent user', async () => {
+        expect(async() => {
+            await authenticateUserUseCase.execute({
+                email: 'failed@email.com',
+                password: 'failedpass',
+            });
+        }).rejects.toBeInstanceOf(AppError);
+    });
+
+    it('Should not be able to authenticate with incorret password', async () => {
+        expect(async() => {
+            const failedPass: ICreateUserDTO = {
+                name: 'Usuário Certo',
+                email: 'usuario@email.com',
+                password: 'passok',
+            };
+
+            await createUserUseCase.execute(failedPass);
+
+            const failedResultPass = await authenticateUserUseCase.execute({
+                email: failedPass.email,
+                password: 'passfail',
+            });
+        }).rejects.toBeInstanceOf(AppError);
+    });
+
+    it('Should not be able to authenticate with incorret email', async () => {
+        expect(async() => {
+            const failedEmail: ICreateUserDTO = {
+                name: 'Usuário Certo',
+                email: 'usuario@email.com',
+                password: 'passok',
+            };
+
+            await createUserUseCase.execute(failedEmail);
+
+            const failedResultEmail = await authenticateUserUseCase.execute({
+                email: 'userfail@email.com',
+                password: failedEmail.password,
+            });
+        }).rejects.toBeInstanceOf(AppError);
     });
 })
