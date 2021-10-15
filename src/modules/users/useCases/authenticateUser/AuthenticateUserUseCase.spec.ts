@@ -3,6 +3,7 @@ import { InMemoryUsersRepository } from "../../repositories/in-memory/InMemoryUs
 import { CreateUserUseCase } from "../createUser/CreateUserUseCase";
 import { ICreateUserDTO } from "../createUser/ICreateUserDTO";
 import { AppError } from "../../../../shared/errors/AppError";
+import { IncorrectEmailOrPasswordError } from "./IncorrectEmailOrPasswordError";
 
 let authenticateUserUseCase: AuthenticateUserUseCase;
 let createUserUseCase: CreateUserUseCase;
@@ -56,7 +57,7 @@ describe('Authenticate User', () => {
                 email: failedPass.email,
                 password: 'passfail',
             });
-        }).rejects.toBeInstanceOf(AppError);
+        }).rejects.toBeInstanceOf(IncorrectEmailOrPasswordError);
     });
 
     it('Should not be able to authenticate with incorret email', async () => {
@@ -73,6 +74,6 @@ describe('Authenticate User', () => {
                 email: 'userfail@email.com',
                 password: failedEmail.password,
             });
-        }).rejects.toBeInstanceOf(AppError);
+        }).rejects.toBeInstanceOf(IncorrectEmailOrPasswordError);
     });
 })
