@@ -26,12 +26,14 @@ describe('Create Statment', () => {
 
         const newUser = await usersRepositoryInMemory.create(user);
 
+        const idUser = String(newUser.id);
+
         const newDeposit = {
             type: OperationType.DEPOSIT, amount: 1000, description: 'Pix'
         };
 
         const newStatementDeposit = await createStatementUseCase.execute({
-            user_id: newUser.id as string,
+            user_id: idUser,
             type: newDeposit.type,
             amount: newDeposit.amount,
             description: newDeposit.description,
@@ -42,7 +44,7 @@ describe('Create Statment', () => {
         };
 
         const newStatementWithdrawal = await createStatementUseCase.execute({
-            user_id: newUser.id as string,
+            user_id: idUser,
             type: newWithdrawal.type,
             amount: newWithdrawal.amount,
             description: newWithdrawal.description,
